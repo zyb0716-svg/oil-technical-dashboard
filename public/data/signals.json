@@ -1,0 +1,38 @@
+{
+  "brent": {
+    "latest_price": 103.54,
+    "latest_data_date": "2026-05-22",
+    "trend_score": -1,
+    "trend_label": "震荡/中性",
+    "momentum_label": "动能转弱",
+    "volatility_label": "波动率偏高",
+    "summary_cn": "Brent 当前价格低于20日均线，短线偏弱；20日均线高于60日均线，中期趋势偏强。综合评分为 -1/5，技术面判断为震荡/中性。上方关注R1 112.69美元阻力，下方关注S1 98.46美元支撑。",
+    "score_breakdown": [
+      {
+        "name": "价格 vs MA20",
+        "value": -1,
+        "explain": "当前价格低于20日均线，短线偏弱"
+      },
+      {
+        "name": "MA20 vs MA60",
+        "value": 1,
+        "explain": "20日均线高于60日均线，中期趋势偏强"
+      },
+      {
+        "name": "MA60 vs MA120",
+        "value": 1,
+        "explain": "60日均线高于120日均线，中长期结构偏强"
+      },
+      {
+        "name": "MACD快线 vs 慢线",
+        "value": -1,
+        "explain": "MACD快线低于慢线，说明短期动能弱于前期趋势，动能转弱"
+      },
+      {
+        "name": "RSI14",
+        "value": -1,
+        "explain": "RSI低于50，短期动能偏弱"
+      }
+    ]
+  }
+}
