@@ -3,7 +3,7 @@ name: Update data and deploy
 on:
   workflow_dispatch:
   schedule:
-    - cron: '45 5 * * *'
+    - cron: '20 6 * * *'
 
 permissions:
   contents: read
