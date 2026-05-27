@@ -159,7 +159,7 @@ GitHub Actions 中配置：
 `.github/workflows/update-and-deploy.yml` 支持：
 
 - `workflow_dispatch` 手动触发
-- 每日自动更新：北京时间 08:10，即 UTC 00:10。GitHub Actions 的 cron 使用 UTC 时间
+- 每日自动更新：北京时间 13:45，即 UTC 05:45。GitHub Actions 的 cron 使用 UTC 时间
 - 安装 Python 依赖
 - 运行 `python scripts/update_data.py`
 - 安装 Node 依赖
