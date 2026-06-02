@@ -6,9 +6,10 @@ on:
       yahoo_close_mode:
         description: Yahoo close selection mode
         required: false
-        default: normal_daily_close
+        default: auto_by_new_york_time
         type: choice
         options:
+          - auto_by_new_york_time
           - normal_daily_close
           - early_fixed_close
 
@@ -47,7 +48,17 @@ jobs:
       - name: Resolve Yahoo close mode
         id: close_mode
         run: |
-          echo "mode=${{ github.event.inputs.yahoo_close_mode || 'normal_daily_close' }}" >> "$GITHUB_OUTPUT"
+          requested="${{ github.event.inputs.yahoo_close_mode || 'auto_by_new_york_time' }}"
+          if [ "$requested" = "auto_by_new_york_time" ]; then
+            ny_hour="$(TZ=America/New_York date +%H)"
+            if [ "$ny_hour" = "20" ]; then
+              echo "mode=early_fixed_close" >> "$GITHUB_OUTPUT"
+            else
+              echo "mode=normal_daily_close" >> "$GITHUB_OUTPUT"
+            fi
+          else
+            echo "mode=$requested" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Update static market data
         env:
