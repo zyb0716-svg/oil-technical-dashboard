@@ -138,11 +138,20 @@ GitHub Actions 中配置：
 
 ## 为什么剔除当天未完成日线？
 
-本看板用于日度收盘技术分析，不用于盘中实时交易。yfinance 等数据源可能在交易日当天返回正在形成中的日线数据。如果直接使用这根未完成日线，RSI、MACD、布林带、支撑阻力和综合信号会在盘中变化，容易造成误读。因此项目默认只使用 `date < 当前 UTC 日期` 的完整日线数据。
+本看板用于日度收盘技术分析，不用于盘中实时交易。yfinance 等数据源可能在交易日当天返回正在形成中的日线数据。如果直接使用这根未完成日线，RSI、MACD、布林带、支撑阻力和综合信号会在盘中变化，容易造成误读。因此正常模式默认只使用 `date < 当前 America/New_York 日期` 的完整日线数据。
 
-页面显示的“数据日期”是实际用于技术指标计算的最后完整交易日，“更新时间”是脚本最近一次运行并生成 JSON 的时间。`metadata.json` 中会记录 `last_raw_data_date`、`latest_data_date`、`dropped_incomplete_latest_bar` 和 `dropped_rows`，用于确认是否剔除了未完成日线。
+页面显示的“数据日期”是实际用于技术指标计算的结算价取数日期，“更新时间”是脚本最近一次运行并生成 JSON 的时间。`metadata.json` 中会记录 `last_raw_data_date`、`latest_data_date`、`dropped_incomplete_latest_bar`、`dropped_rows`、`yahoo_close_mode` 和 `timezone_for_daily_cutoff`，用于确认是否剔除了未完成日线以及当前取数模式。
 
 如果在交易日盘中手动运行 `update_data.py`，脚本会删除当天未完成日线，因此 `latest_data_date` 可能停留在上一个完整交易日。等到下一交易日或 GitHub Actions 定时运行后，数据会更新到最新完整交易日。
+
+## Yahoo close 取数模式
+
+`scripts/update_data.py` 支持通过环境变量 `YAHOO_CLOSE_MODE` 选择取数模式：
+
+- `normal_daily_close`：正常日线模式。使用当前 `America/New_York` 日期作为日线截止，保留 `date < 当前美东日期` 的最新一行。
+- `early_fixed_close`：早间固定 close 模式。用于美东 20:15 附近的提前刷新；只有 Yahoo 原始数据顶部前两行日期相同时，才丢弃第 1 行实时变动行，并使用第 2 行作为该日期的固定 close。如果前两行日期不同，不会强行取第 2 行，而是回退到 `normal_daily_close` 逻辑。
+
+注意：这里的 Yahoo close 不等同于 ICE 官方结算价，只表示 Yahoo Finance `BZ=F` 数据源返回的 close。
 
 ## 输出文件
 
@@ -159,7 +168,8 @@ GitHub Actions 中配置：
 `.github/workflows/update-and-deploy.yml` 支持：
 
 - `workflow_dispatch` 手动触发
-- 每日自动更新由 cron-job.org 触发：美国东部时间 00:15。美国夏令时对应北京时间 12:15，美国冬令时对应北京时间 13:15
+- `YAHOO_CLOSE_MODE` 可通过 workflow_dispatch 输入选择，默认 `normal_daily_close`
+- GitHub Actions 当前按美国夏令时设置两次自动更新：UTC 00:15 运行 `early_fixed_close`，UTC 04:15 运行 `normal_daily_close`。冬令时需要调整为 UTC 01:15 和 UTC 05:15，或继续由 cron-job.org 使用 `America/New_York` 时区触发
 - 安装 Python 依赖
 - 运行 `python scripts/update_data.py`
 - 安装 Node 依赖
