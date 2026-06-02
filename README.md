@@ -169,7 +169,10 @@ GitHub Actions 中配置：
 
 - `workflow_dispatch` 手动触发
 - `YAHOO_CLOSE_MODE` 可通过 workflow_dispatch 输入选择，默认 `normal_daily_close`
-- GitHub Actions 当前按美国夏令时设置两次自动更新：UTC 00:15 运行 `early_fixed_close`，UTC 04:15 运行 `normal_daily_close`。冬令时需要调整为 UTC 01:15 和 UTC 05:15，或继续由 cron-job.org 使用 `America/New_York` 时区触发
+- 每日两次自动更新由 cron-job.org 触发，不使用 GitHub 原生 schedule
+- cron-job.org 使用 `America/New_York` 时区：20:15 触发 `early_fixed_close`，00:15 触发 `normal_daily_close`
+- 20:15 任务请求体：`{"ref":"main","inputs":{"yahoo_close_mode":"early_fixed_close"}}`
+- 00:15 任务请求体：`{"ref":"main","inputs":{"yahoo_close_mode":"normal_daily_close"}}`
 - 安装 Python 依赖
 - 运行 `python scripts/update_data.py`
 - 安装 Node 依赖
