@@ -19,8 +19,8 @@ export default function SummaryCards({ brent, signals, metadata }: Props) {
     { label: '趋势评分', value: `${signal.trend_score} / 5`, sub: '五项规则合计，范围 -5 到 +5', icon: Shield },
     { label: '最近支撑位', value: s1 ? money(s1.price) : '暂无', sub: '当前价格下方可能获得支撑', icon: TrendingDown },
     { label: '最近阻力位', value: r1 ? money(r1.price) : '暂无', sub: '当前价格上方可能遇到压力', icon: TrendingUp },
-    { label: '数据日期', value: latestDataDate, sub: '技术分析使用的最后完整交易日', icon: CalendarDays },
-    { label: '更新时间', value: metadata.last_updated, sub: '', icon: Clock },
+    { label: '数据日期', value: latestDataDate, sub: '结算价取数日期', icon: CalendarDays },
+    { label: '更新时间', value: formatUtcMinute(metadata.last_updated), sub: '', icon: Clock },
   ];
 
   return (
@@ -42,6 +42,12 @@ export default function SummaryCards({ brent, signals, metadata }: Props) {
       })}
     </div>
   );
+}
+
+function formatUtcMinute(value: string): string {
+  const match = value.match(/^(\d{4}-\d{2}-\d{2}) (\d{2}:\d{2})(?::\d{2})? UTC$/);
+  if (match) return `${match[1]} ${match[2]} UTC`;
+  return value;
 }
 
 function dataStatusText(status: string): string {
