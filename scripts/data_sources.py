@@ -11,9 +11,8 @@ import requests
 
 FRED_BRENT_SERIES = "DCOILBRENTEU"
 YFINANCE_BRENT_TICKER = "BZ=F"
-YAHOO_CLOSE_MODE_EARLY = "early_fixed_close"
 YAHOO_CLOSE_MODE_NORMAL = "normal_daily_close"
-VALID_YAHOO_CLOSE_MODES = {YAHOO_CLOSE_MODE_EARLY, YAHOO_CLOSE_MODE_NORMAL}
+VALID_YAHOO_CLOSE_MODES = {YAHOO_CLOSE_MODE_NORMAL}
 DAILY_CUTOFF_TZ = "America/New_York"
 
 
@@ -34,9 +33,6 @@ def base_filter_meta(mode: str | None = None) -> dict:
         "dropped_incomplete_latest_bar": False,
         "dropped_rows": 0,
         "yahoo_close_mode": mode or yahoo_close_mode(),
-        "early_fixed_close_used": False,
-        "duplicated_top_date_detected": False,
-        "discarded_realtime_top_row": False,
         "timezone_for_daily_cutoff": DAILY_CUTOFF_TZ,
     }
 
@@ -83,48 +79,6 @@ def drop_incomplete_daily_bar(
         meta["latest_data_date"] = latest_date.strftime("%Y-%m-%d")
 
     return cleaned, meta
-
-
-def apply_yahoo_close_mode(
-    df: pd.DataFrame,
-    mode: str,
-    now_utc: datetime | None = None,
-) -> tuple[pd.DataFrame, dict]:
-    """
-    Apply Yahoo close selection rules.
-
-    normal_daily_close:
-      Keep only dates before the current America/New_York date.
-
-    early_fixed_close:
-      If the first two raw rows, sorted newest first, have the same date,
-      discard only the first realtime row and keep the second row as the
-      fixed close for that date. Otherwise fall back to normal_daily_close.
-    """
-    if df is None or df.empty:
-        return drop_incomplete_daily_bar(df, mode=mode, now_utc=now_utc)
-
-    sorted_desc = df.copy().sort_index(ascending=False)
-    raw_dates = pd.to_datetime(sorted_desc.index).date
-    meta = base_filter_meta(mode)
-    meta["last_raw_data_date"] = max(raw_dates).strftime("%Y-%m-%d")
-    if mode == YAHOO_CLOSE_MODE_EARLY and len(sorted_desc) >= 2:
-        first_date = raw_dates[0]
-        second_date = raw_dates[1]
-        duplicated_top = first_date == second_date
-        meta["duplicated_top_date_detected"] = bool(duplicated_top)
-
-        if duplicated_top:
-            cleaned_desc = sorted_desc.iloc[1:].copy()
-            cleaned = cleaned_desc.sort_index()
-            meta["early_fixed_close_used"] = True
-            meta["discarded_realtime_top_row"] = True
-            meta["dropped_incomplete_latest_bar"] = True
-            meta["dropped_rows"] = 1
-            meta["latest_data_date"] = pd.to_datetime(cleaned.index).date.max().strftime("%Y-%m-%d")
-            return cleaned, meta
-
-    return drop_incomplete_daily_bar(df, mode=mode, now_utc=now_utc)
 
 
 def fetch_fred_brent_close(years: int = 3) -> pd.DataFrame:
@@ -203,7 +157,7 @@ def choose_brent_source(errors: list[str]) -> tuple[pd.DataFrame | None, str, st
     mode = yahoo_close_mode()
     try:
         yf_df = fetch_yfinance_brent_ohlc()
-        yf_df, filter_meta = apply_yahoo_close_mode(yf_df, mode)
+        yf_df, filter_meta = drop_incomplete_daily_bar(yf_df, mode=mode)
         if yf_df.empty:
             raise RuntimeError("yfinance returned no complete daily bars after filtering")
         return yf_df, "Yahoo Finance Brent futures BZ=F", "real", filter_meta

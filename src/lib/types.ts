@@ -40,10 +40,7 @@ export type BrentData = {
   last_raw_data_date?: string | null;
   latest_data_date?: string | null;
   dropped_incomplete_latest_bar?: boolean;
-  yahoo_close_mode?: 'early_fixed_close' | 'normal_daily_close' | string | null;
-  early_fixed_close_used?: boolean;
-  duplicated_top_date_detected?: boolean;
-  discarded_realtime_top_row?: boolean;
+  yahoo_close_mode?: 'normal_daily_close' | string | null;
   timezone_for_daily_cutoff?: string | null;
   message_cn?: string;
   data: PricePoint[];
@@ -90,10 +87,7 @@ export type Metadata = {
   latest_data_date?: string | null;
   dropped_incomplete_latest_bar?: boolean;
   dropped_rows?: number;
-  yahoo_close_mode?: 'early_fixed_close' | 'normal_daily_close' | string | null;
-  early_fixed_close_used?: boolean;
-  duplicated_top_date_detected?: boolean;
-  discarded_realtime_top_row?: boolean;
+  yahoo_close_mode?: 'normal_daily_close' | string | null;
   timezone_for_daily_cutoff?: string | null;
   analysis_frequency?: string;
   uses_incomplete_intraday_bar?: boolean;

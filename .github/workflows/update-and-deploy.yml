@@ -2,15 +2,6 @@ name: Update data and deploy
 
 on:
   workflow_dispatch:
-    inputs:
-      yahoo_close_mode:
-        description: Yahoo close selection mode
-        required: false
-        default: normal_daily_close
-        type: choice
-        options:
-          - normal_daily_close
-          - early_fixed_close
 
 permissions:
   contents: read
@@ -44,15 +35,10 @@ jobs:
           restore-keys: |
             oil-data-
 
-      - name: Resolve Yahoo close mode
-        id: close_mode
-        run: |
-          echo "mode=${{ github.event.inputs.yahoo_close_mode || 'normal_daily_close' }}" >> "$GITHUB_OUTPUT"
-
       - name: Update static market data
         env:
           FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
-          YAHOO_CLOSE_MODE: ${{ steps.close_mode.outputs.mode }}
+          YAHOO_CLOSE_MODE: normal_daily_close
         run: python scripts/update_data.py
 
       - name: Setup Node

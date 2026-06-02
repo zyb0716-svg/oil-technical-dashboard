@@ -146,10 +146,9 @@ GitHub Actions 中配置：
 
 ## Yahoo close 取数模式
 
-`scripts/update_data.py` 支持通过环境变量 `YAHOO_CLOSE_MODE` 选择取数模式：
+`scripts/update_data.py` 目前只支持 `normal_daily_close`：
 
 - `normal_daily_close`：正常日线模式。使用当前 `America/New_York` 日期作为日线截止，保留 `date < 当前美东日期` 的最新一行。
-- `early_fixed_close`：早间固定 close 模式。用于美东 20:15 附近的提前刷新；只有 Yahoo 原始数据顶部前两行日期相同时，才丢弃第 1 行实时变动行，并使用第 2 行作为该日期的固定 close。如果前两行日期不同，不会强行取第 2 行，而是回退到 `normal_daily_close` 逻辑。
 
 注意：这里的 Yahoo close 不等同于 ICE 官方结算价，只表示 Yahoo Finance `BZ=F` 数据源返回的 close。
 
@@ -168,11 +167,10 @@ GitHub Actions 中配置：
 `.github/workflows/update-and-deploy.yml` 支持：
 
 - `workflow_dispatch` 手动触发
-- `YAHOO_CLOSE_MODE` 可通过 workflow_dispatch 输入选择，默认 `normal_daily_close`
+- `YAHOO_CLOSE_MODE` 固定为 `normal_daily_close`
 - 每日自动更新由 cron-job.org 触发，不使用 GitHub 原生 schedule
 - cron-job.org 使用 `America/New_York` 时区，00:15 运行一次 `normal_daily_close`
-- cron-job.org 请求体可保持：`{"ref":"main"}`；也可以显式使用：`{"ref":"main","inputs":{"yahoo_close_mode":"normal_daily_close"}}`
-- `early_fixed_close` 只保留为手动诊断模式；如果脚本无法可靠读取 Yahoo 网页前两行重复日期，不应将它作为自动刷新模式
+- cron-job.org 请求体保持：`{"ref":"main"}`
 - 安装 Python 依赖
 - 运行 `python scripts/update_data.py`
 - 安装 Node 依赖
