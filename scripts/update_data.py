@@ -79,7 +79,6 @@ def build_brent_payload(raw: pd.DataFrame, source: str, data_status: str, now: s
         "early_fixed_close_used": bool(filter_meta.get("early_fixed_close_used", False)),
         "duplicated_top_date_detected": bool(filter_meta.get("duplicated_top_date_detected", False)),
         "discarded_realtime_top_row": bool(filter_meta.get("discarded_realtime_top_row", False)),
-        "early_single_history_row_used": bool(filter_meta.get("early_single_history_row_used", False)),
         "timezone_for_daily_cutoff": filter_meta.get("timezone_for_daily_cutoff"),
         "data": frame_records(enriched),
         "levels": levels,
@@ -182,7 +181,6 @@ def metadata(now: str, source: str, data_status: str, errors: list[str], filter_
         "early_fixed_close_used": bool(filter_meta.get("early_fixed_close_used", False)),
         "duplicated_top_date_detected": bool(filter_meta.get("duplicated_top_date_detected", False)),
         "discarded_realtime_top_row": bool(filter_meta.get("discarded_realtime_top_row", False)),
-        "early_single_history_row_used": bool(filter_meta.get("early_single_history_row_used", False)),
         "timezone_for_daily_cutoff": filter_meta.get("timezone_for_daily_cutoff"),
         "analysis_frequency": "daily_close",
         "uses_incomplete_intraday_bar": False,
@@ -207,7 +205,6 @@ def empty_brent_payload(now: str, source: str, errors: list[str], filter_meta: d
         "early_fixed_close_used": bool(filter_meta.get("early_fixed_close_used", False)),
         "duplicated_top_date_detected": bool(filter_meta.get("duplicated_top_date_detected", False)),
         "discarded_realtime_top_row": bool(filter_meta.get("discarded_realtime_top_row", False)),
-        "early_single_history_row_used": bool(filter_meta.get("early_single_history_row_used", False)),
         "timezone_for_daily_cutoff": filter_meta.get("timezone_for_daily_cutoff"),
         "data": [],
         "levels": {"supports": [], "resistances": []},
@@ -271,7 +268,6 @@ def payload_filter_meta(payload: dict) -> dict:
         "early_fixed_close_used": bool(payload.get("early_fixed_close_used", False)),
         "duplicated_top_date_detected": bool(payload.get("duplicated_top_date_detected", False)),
         "discarded_realtime_top_row": bool(payload.get("discarded_realtime_top_row", False)),
-        "early_single_history_row_used": bool(payload.get("early_single_history_row_used", False)),
         "timezone_for_daily_cutoff": payload.get("timezone_for_daily_cutoff", "America/New_York"),
     }
 

@@ -37,7 +37,6 @@ def base_filter_meta(mode: str | None = None) -> dict:
         "early_fixed_close_used": False,
         "duplicated_top_date_detected": False,
         "discarded_realtime_top_row": False,
-        "early_single_history_row_used": False,
         "timezone_for_daily_cutoff": DAILY_CUTOFF_TZ,
     }
 
@@ -109,10 +108,6 @@ def apply_yahoo_close_mode(
     raw_dates = pd.to_datetime(sorted_desc.index).date
     meta = base_filter_meta(mode)
     meta["last_raw_data_date"] = max(raw_dates).strftime("%Y-%m-%d")
-    if now_utc is None:
-        now_utc = datetime.now(timezone.utc)
-    now_ny = now_utc.astimezone(ZoneInfo(DAILY_CUTOFF_TZ))
-
     if mode == YAHOO_CLOSE_MODE_EARLY and len(sorted_desc) >= 2:
         first_date = raw_dates[0]
         second_date = raw_dates[1]
@@ -127,19 +122,6 @@ def apply_yahoo_close_mode(
             meta["dropped_incomplete_latest_bar"] = True
             meta["dropped_rows"] = 1
             meta["latest_data_date"] = pd.to_datetime(cleaned.index).date.max().strftime("%Y-%m-%d")
-            return cleaned, meta
-
-        if first_date == now_ny.date() and now_ny.hour >= 20:
-            # yfinance often returns only the historical row, while the Yahoo
-            # web page may render a separate realtime row above it. In that
-            # case there is no duplicate date inside the API payload, so keep
-            # the latest yfinance row only after the intended 20:15 NY run.
-            cleaned = sorted_desc.sort_index()
-            meta["early_fixed_close_used"] = True
-            meta["early_single_history_row_used"] = True
-            meta["dropped_incomplete_latest_bar"] = False
-            meta["dropped_rows"] = 0
-            meta["latest_data_date"] = first_date.strftime("%Y-%m-%d")
             return cleaned, meta
 
     return drop_incomplete_daily_bar(df, mode=mode, now_utc=now_utc)

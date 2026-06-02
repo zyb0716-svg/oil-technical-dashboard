@@ -168,11 +168,11 @@ GitHub Actions 中配置：
 `.github/workflows/update-and-deploy.yml` 支持：
 
 - `workflow_dispatch` 手动触发
-- `YAHOO_CLOSE_MODE` 可通过 workflow_dispatch 输入选择，默认 `auto_by_new_york_time`
-- 每日两次自动更新由 cron-job.org 触发，不使用 GitHub 原生 schedule
-- cron-job.org 使用 `America/New_York` 时区，现有同一个任务设置为 00:15 和 20:15 各运行一次
-- workflow 在 `auto_by_new_york_time` 模式下自动判断美东当前小时：20:15 运行 `early_fixed_close`，00:15 运行 `normal_daily_close`
-- cron-job.org 请求体可保持：`{"ref":"main"}`；也可以显式使用：`{"ref":"main","inputs":{"yahoo_close_mode":"auto_by_new_york_time"}}`
+- `YAHOO_CLOSE_MODE` 可通过 workflow_dispatch 输入选择，默认 `normal_daily_close`
+- 每日自动更新由 cron-job.org 触发，不使用 GitHub 原生 schedule
+- cron-job.org 使用 `America/New_York` 时区，00:15 运行一次 `normal_daily_close`
+- cron-job.org 请求体可保持：`{"ref":"main"}`；也可以显式使用：`{"ref":"main","inputs":{"yahoo_close_mode":"normal_daily_close"}}`
+- `early_fixed_close` 只保留为手动诊断模式；如果脚本无法可靠读取 Yahoo 网页前两行重复日期，不应将它作为自动刷新模式
 - 安装 Python 依赖
 - 运行 `python scripts/update_data.py`
 - 安装 Node 依赖
