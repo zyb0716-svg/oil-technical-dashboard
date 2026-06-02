@@ -20,7 +20,7 @@ export default function SummaryCards({ brent, signals, metadata }: Props) {
     { label: '最近支撑位', value: s1 ? money(s1.price) : '暂无', sub: '当前价格下方可能获得支撑', icon: TrendingDown },
     { label: '最近阻力位', value: r1 ? money(r1.price) : '暂无', sub: '当前价格上方可能遇到压力', icon: TrendingUp },
     { label: '数据日期', value: latestDataDate, sub: '结算价取数日期', icon: CalendarDays },
-    { label: '更新时间', value: formatUtcMinute(metadata.last_updated), sub: closeModeText(metadata.yahoo_close_mode), icon: Clock },
+    { label: '更新时间', value: formatUtcMinute(metadata.last_updated), sub: '', icon: Clock },
   ];
 
   return (
@@ -48,12 +48,6 @@ function formatUtcMinute(value: string): string {
   const match = value.match(/^(\d{4}-\d{2}-\d{2}) (\d{2}:\d{2})(?::\d{2})? UTC$/);
   if (match) return `${match[1]} ${match[2]} UTC`;
   return value;
-}
-
-function closeModeText(mode?: string | null): string {
-  if (mode === 'early_fixed_close') return '早间固定 close 模式';
-  if (mode === 'normal_daily_close') return '正常日线模式';
-  return '数据模式未记录';
 }
 
 function dataStatusText(status: string): string {
