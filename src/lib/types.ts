@@ -44,6 +44,7 @@ export type BrentData = {
   early_fixed_close_used?: boolean;
   duplicated_top_date_detected?: boolean;
   discarded_realtime_top_row?: boolean;
+  early_single_history_row_used?: boolean;
   timezone_for_daily_cutoff?: string | null;
   message_cn?: string;
   data: PricePoint[];
@@ -94,6 +95,7 @@ export type Metadata = {
   early_fixed_close_used?: boolean;
   duplicated_top_date_detected?: boolean;
   discarded_realtime_top_row?: boolean;
+  early_single_history_row_used?: boolean;
   timezone_for_daily_cutoff?: string | null;
   analysis_frequency?: string;
   uses_incomplete_intraday_bar?: boolean;
