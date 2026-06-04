@@ -20,8 +20,8 @@ type Props = {
 };
 
 const colors = {
-  up: '#127c59',
-  down: '#b9383f',
+  up: '#b9383f',
+  down: '#127c59',
   price: '#172026',
   ma20: '#0f6f9f',
   ma60: '#8b5b00',
